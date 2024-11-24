@@ -1,0 +1,43 @@
+version: '3'
+services:
+  backend:
+    image: backend_image:v2
+    container_name: backend
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mongodb
+    volumes:
+      - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/app/:/app
+    command: tail -f /dev/null
+    networks:
+      - batman
+
+
+  coderunner:
+    image: coderunner_image
+    container_name: coderunner
+    ports:
+      - "5001:5001"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock  # Host'taki Docker'a erişim
+    privileged: true  # DinD için gerekli
+    networks:
+      - batman
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongo_db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/mongodb/data:/data/db
+    ports:
+      - "27017:27017"
+    networks:
+      - batman
+
+networks:
+  batman:
+    driver: bridge

@@ -1,8 +1,9 @@
-from pymongo import MongoClient
+import json
 
-try:
-    client = MongoClient("mongodb://admin:password@localhost:27017/", serverSelectionTimeoutMS=5000)
-    print(client.server_info())  # Bağlantıyı doğrular
-    print("Bağlantı başarılı")
-except Exception as e:
-    print("Bağlantı başarısız:", e)
+student = {
+    "ali": 12,
+    "aslı": 11,
+}
+
+with open("data.json", "w") as d:
+    json.dump(student, d, indend=4)

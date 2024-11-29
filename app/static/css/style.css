@@ -1,25 +1,34 @@
-body{
-	background-color: #428bca !important;
-    font-family: 'Inconsolata',sans-serif;
-    color:white !important;
+textarea {
+    width: 100%;
+    height: 300px;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    background-color: #fff;
+    box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
 }
-
-.cm-s-default {
-	-webkit-box-shadow: 5px 5px 20px 8px rgba(62,132,189,1);
-	-moz-box-shadow: 5px 5px 20px 8px rgba(62,132,189,1);
-	box-shadow: 5px 5px 20px 8px rgba(62,132,189,1);
-
+button {
+    margin-top: 10px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
 }
-
-button{
-    font-size: 20px !important;
+button:hover {
+    background-color: #45a049;
 }
-a{
-	color:white;
+#output, #result, #score {
+    margin-top: 20px;
 }
-#run:hover{
-	-webkit-filter: grayscale(100%);
-   -moz-filter: grayscale(100%);
-   -ms-filter: grayscale(100%);
-   filter: grayscale(100%);
+pre {
+    background-color: #e4e4e4;
+    padding: 10px;
+    border-radius: 5px;
+}
+#errorslist th, #errorslist td {
+    padding: 10px; /* Hücre içindeki boşluk */
 }

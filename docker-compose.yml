@@ -1,27 +1,30 @@
-version: '3'
+version: '3.8'
 services:
-  backend:
-    image: backend_image:v2
-    container_name: backend
+  webapp:
+    image: webapp:latest
+    container_name: webapp
     ports:
       - "5000:5000"
     depends_on:
+      - manager
       - mongodb
+      - ollama
     volumes:
       - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/app/:/app
     command: tail -f /dev/null
     networks:
       - batman
 
-
-  coderunner:
-    image: coderunner_image
-    container_name: coderunner
+  manager:
+    image: code_manager:latest
+    container_name: code_manager
     ports:
       - "5001:5001"
+    depends_on:
+      - mongodb
+      - ollama
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock  # Host'taki Docker'a erişim
-    privileged: true  # DinD için gerekli
+      - /var/run/docker.sock:/var/run/docker.sock
     networks:
       - batman
 
@@ -38,6 +41,24 @@ services:
     networks:
       - batman
 
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    ports:
+      - "11433:11433"
+    volumes:
+      - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/ollama/data:/root/.ollama
+    networks:
+      - batman
+    depends_on:
+      - mongodb
+    environment:
+      - OLLAMA_HOST=0.0.0.0:11433
+
 networks:
   batman:
     driver: bridge
+    name: batman
+
+volumes:
+  ollama_storage:

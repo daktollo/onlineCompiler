@@ -1,105 +1,4 @@
-// Created by Ethan Chiu 2016
-// Updated August 4, 2018
-
 $(document).ready(function() {
-  //Pulls info from AJAX call and sends it off to codemirror's update linting
-  //Has callback result_cb
-  var socket = io.connect('http://' + document.domain + ':' + location.port + '/check_disconnect');
-  var click_count = 0;
-
-  // Hataları işleme ve tabloyu güncelleme
-  function check_syntax(code, result_cb) {
-    //Example error for guideline
-    var error_list = [{
-      line_no: null,
-      column_no_start: null,
-      column_no_stop: null,
-      fragment: null,
-      message: null,
-      severity: null
-    }];
-  
-      //Push and replace errors
-      function check(data) {
-        //Clear array.
-        error_list = [{
-          line_no: null,
-          column_no_start: null,
-          column_no_stop: null,
-          fragment: null,
-          message: null,
-          severity: null
-        }];
-        document.getElementById('errorslist').innerHTML = '';
-        //Check if pylint output is empty.
-        if (data == null) {
-          result_cb(error_list);
-        } else {
-          $('#errorslist').append("<tr>" + "<th>Line</th>" + "<th>Severity</th>" +
-            "<th>Error</th>" + "<th>Tips</th>" +
-            "<th>Error Code</th>" +
-            "<th>Error Info</th>" + "</tr>");
-          var data_length = 0;
-          if (data != null) {
-            data_length = Object.keys(data).length;
-          }
-          for (var x = 0; x < data_length; x += 1) {
-            if (data[x] == null) {
-              continue
-            }
-            number = data[x].line
-            code = data[x].code
-            codeinfo = data[x].error_info
-            severity = code[0]
-            moreinfo = data[x].message
-            message = data[x].error
-  
-            //Set severity to necessary parameters
-            if (severity == "E" || severity == "e") {
-              severity = "error";
-              severity_color = "red";
-            } else if (severity == "W" || severity == "w") {
-              severity = "warning";
-              severity_color = "yellow";
-            }
-            //Push to error list
-            error_list.push({
-              line_no: number,
-              column_no_start: null,
-              column_no_stop: null,
-              fragment: null,
-              message: message,
-              severity: severity
-            });
-  
-            //Get help message for each id
-            // var moreinfo = getHelp(id);
-            //Append all data to table
-            $('#errorslist').append("<tr>" + "<td>" + number + "</td>" +
-              "<td style=\"background-color:" + severity_color + ";\"" +
-              ">" + severity + "</td>" +
-              "<td>" + message + "</td>" +
-              "<td>" + moreinfo + "</td>" +
-              "<td>" + code + "</td>" +
-              "<td>" + codeinfo + "</td>" +
-              "</tr>");
-          }
-          result_cb(error_list);
-        }
-  
-      }
-      //AJAX call to pylint
-      $.post('/check_code', {
-        text: code
-      }, function(data) {
-        current_text = data;
-        console.log("current_text:", current_text)
-        check(current_text);
-        return false;
-      }, 'json');
-  }
-  
-
 
   var editor = CodeMirror.fromTextArea(document.getElementById("txt"), {
     mode: {
@@ -113,26 +12,31 @@ $(document).ready(function() {
     lint: true,
     styleActiveLine: true,
     gutters: ["CodeMirror-lint-markers"],
-    lintWith: {
-      "getAnnotations": CodeMirror.remoteValidator,
-      "async": true,
-      "check_cb": check_syntax
-    },
+    lintWith: false
   });
 
-  //Actually Run in Python
   $("#run").click(function() {
-    console.log("run func")
-    $.post('/run_code', {
-      text: editor.getValue()
-    }, function(data) {
-      print_result(data);
-      return false;
-    }, 'json');
+    const code = editor.getValue();
 
+    $.ajax({
+        url: '/submit_code',
+        method: 'POST',
+        contentType: 'application/json',
+        data: JSON.stringify({ text: code }),
+        success: function(response) {
+            print_result(response);
+        },
+        error: function(xhr) {
+            print_result({ error: xhr.responseJSON?.error || "Bir hata oluştu" });
+        }
+    });
     function print_result(data) {
-      document.getElementById('output').innerHTML = '';
-      $("#output").append("<pre>" + data + "</pre>");
+        document.getElementById('output').innerHTML = '';
+        if (data.error) {
+            $("#output").append("<pre style='color: red;'>Hata: " + data.error + "</pre>");
+        } else {
+            $("#output").append("<pre>" + data.output + "</pre>");
+        }
     }
   });
 
@@ -141,13 +45,11 @@ $(document).ready(function() {
     const outputContent = document.getElementById('output').innerText;
     console.log('txtContent:', txtContent);
     
-    // İstek için veri
     const requestData = {
-        message: txtContent,  // 'txt' içeriği
-        output: outputContent // 'output' içeriği
+        message: txtContent,
+        output: outputContent
     };
     
-    // API'ye POST isteği yap
     fetch('/api/ai_error_handler', {
         method: 'POST',
         headers: {
@@ -156,21 +58,19 @@ $(document).ready(function() {
         body: JSON.stringify(requestData),
     })
     .then(response => {
-        // Veriyi stream olarak al
         const outputDiv = document.getElementById('ai-output');
         const reader = response.body.getReader();
         const decoder = new TextDecoder();
-        let fullText = '';  // Tüm metni burada birleştireceğiz
+        let fullText = '';
         const stream = new ReadableStream({
             start(controller) {
                 function push() {
                     reader.read().then(({ done, value }) => {
                         if (done) {
                             controller.close();
-                            outputDiv.innerHTML = `<p>${fullText}</p>`; // Tüm metni ekle
+                            outputDiv.innerHTML = `<p>${fullText}</p>`;
                             return;
                         }
-                        // Veriyi al ve 'data:' etiketini kaldırarak birleştir
                         const chunk = decoder.decode(value, { stream: true });
                         fullText += chunk
                         push();
@@ -186,4 +86,32 @@ $(document).ready(function() {
         document.getElementById('ai-output').innerHTML = "<p>Bir hata oluştu.</p>";
     });
   });
+
+    document.getElementById("user-icon").addEventListener("click", function () {
+        const dropdown = document.getElementById("dropdown-menu");
+        dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+    });
+
+    document.getElementById("logout").addEventListener("click", async function () {
+        const response = await fetch('/logout', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+        });
+        if (response.ok) {
+            alert("Çıkış yapıldı.");
+            window.location.href = "/";
+        } else {
+            alert("Çıkış yapılamadı.");
+        }
+    });
+
+    document.addEventListener("click", function (event) {
+        const dropdown = document.getElementById("dropdown-menu");
+        const userIcon = document.getElementById("user-icon");
+        if (!dropdown.contains(event.target) && !userIcon.contains(event.target)) {
+            dropdown.style.display = "none";
+        }
+    });
+
 });
+

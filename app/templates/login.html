@@ -3,52 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş ve Kayıt</title>
+    <title>Giriş Yap</title>
+    <link rel="stylesheet" href="/static/css/logreg.css" type="text/css">
 </head>
 <body>
-    <h1>Hoşgeldiniz</h1>
-    <div>
-        <h2>Giriş Yap</h2>
-        <form id="login-form">
-            <label for="username">Kullanıcı Adı:</label>
-            <input type="text" id="username" required>
-            <label for="password">Şifre:</label>
-            <input type="password" id="password" required>
-            <button type="submit">Giriş Yap</button>
-        </form>
+    <div class="container">
+        <h1>Hoşgeldiniz</h1>
+        <div class="form-container">
+            <div class="form-section">
+                <h2>Giriş Yap</h2>
+                <form id="login-form">
+                    <label for="username">Kullanıcı Adı:</label>
+                    <input type="text" id="username" required>
+                    <label for="password">Şifre:</label>
+                    <input type="password" id="password" required>
+                    <button type="submit">Giriş Yap</button>
+                </form>
+                <p>Henüz kaydolmadınız mı? <a href="/register">Kayıt Ol</a></p>
+            </div>
+        </div>
     </div>
-    <div>
-        <h2>Kayıt Ol</h2>
-        <form id="register-form">
-            <label for="new-username">Kullanıcı Adı:</label>
-            <input type="text" id="new-username" required>
-            <label for="new-password">Şifre:</label>
-            <input type="password" id="new-password" required>
-            <button type="submit">Kayıt Ol</button>
-        </form>
-    </div>
+
     <script>
-        // Kayıt formu
-        document.getElementById("register-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const newUsername = document.getElementById('new-username').value;
-            const newPassword = document.getElementById('new-password').value;
-
-            const response = await fetch('/register', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username: newUsername, password: newPassword })
-            });
-
-            const result = await response.json();
-            if (response.ok) {
-                alert("Kayıt başarılı! Giriş yapabilirsiniz.");
-            } else {
-                alert(result.message || "Kayıt başarısız.");
-            }
-        });
-
-        // Giriş formu
         document.getElementById("login-form").addEventListener("submit", async function (e) {
             e.preventDefault();
             const username = document.getElementById('username').value;

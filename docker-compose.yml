@@ -4,14 +4,14 @@ services:
     image: webapp:latest
     container_name: webapp
     ports:
-      - "5000:5000"
+      - "5200:5200"
     depends_on:
       - manager
       - mongodb
       - ollama
-    volumes:
-      - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/app/:/app
-    command: tail -f /dev/null
+    #volumes:
+      #- /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/app/:/app
+    #command: tail -f /dev/null
     networks:
       - batman
 
@@ -54,6 +54,13 @@ services:
       - mongodb
     environment:
       - OLLAMA_HOST=0.0.0.0:11433
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 networks:
   batman:

@@ -183,7 +183,7 @@ def ai_error_handler():
     url = "http://ollama:11433/api/generate"
 
     data = {
-        "model": "qwen2.5:3b",
+        "model": "qwen2.5-coder",
         "prompt": prompt,
     }
 
@@ -212,4 +212,4 @@ def disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=5200, debug=True)
+    socketio.run(app, host="0.0.0.0", port=5200, debug=False, allow_unsafe_werkzeug=True)

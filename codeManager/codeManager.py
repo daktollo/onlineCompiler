@@ -26,7 +26,8 @@ def create_container(user_id):
         '--name', container_name,
         '--rm',
         '--network', network_name,
-        'code_runner'
+        'python:3.10',
+        'tail', '-f', '/dev/null'
     ], check=True)
 
 

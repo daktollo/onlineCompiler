@@ -123,34 +123,6 @@ def submit_code():
     except requests.exceptions.RequestException as e:
         return jsonify({"error": f"Kod çalıştırma servisinde bir hata oluştu: {str(e)}"}), 500
 
-    
-
-@app.route('/run_code', methods=['POST'])
-def run_code():
-    if 'user_id' not in session:
-        return jsonify({"error": "Giriş yapmanız gerekiyor"}), 401
-
-    if slow():
-        return jsonify({"error": "Çok sık çalıştırıyorsunuz. Lütfen bekleyin."}), 429
-    session["time_now"] = datetime.now(timezone.utc)
-
-    user_code = request.json.get('text', '')
-    print("user_code:",user_code)
-
-    try:
-        result = subprocess.run(
-            ['python', '-c', user_code],
-            capture_output=True,
-            text=True,
-            check=True
-        )
-        output = result.stdout
-    except subprocess.CalledProcessError as e:
-        output = e.stderr
-
-    return jsonify({"output": output})
-
-
 
 @app.route('/code_editor')
 def code_editor():

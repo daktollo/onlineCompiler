@@ -9,8 +9,8 @@ services:
       - manager
       - mongodb
       - ollama
-    #volumes:
-      #- /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/app/:/app
+    volumes:
+      - /home/daktollo/SEP/KG/onlineCompiler/app/:/app
     #command: tail -f /dev/null
     networks:
       - batman
@@ -35,9 +35,9 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/mongodb/data:/data/db
+      - /home/daktollo/SEP/KG/onlineCompiler/mongodb/data:/data/db
     ports:
-      - "27017:27017"
+      - "27018:27017"
     networks:
       - batman
 
@@ -47,20 +47,20 @@ services:
     ports:
       - "11433:11433"
     volumes:
-      - /home/daktollo/Desktop/SEP/Bitirme/onlineCompiler/ollama/data:/root/.ollama
+      - /home/daktollo/SEP/KG/onlineCompiler/ollama/data:/root/.ollama
     networks:
       - batman
     depends_on:
       - mongodb
     environment:
       - OLLAMA_HOST=0.0.0.0:11433
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
 
 networks:
   batman:

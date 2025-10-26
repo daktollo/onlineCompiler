@@ -188,8 +188,8 @@ export default {
 /* Draggable window */
 .draggable-window {
   position: absolute;
-  width: 90vw;
-  height: 80vh;
+  width: 45vw;
+  height: 40vh;
   background: white;
   border: 2px solid #ddd;
   border-radius: 8px;

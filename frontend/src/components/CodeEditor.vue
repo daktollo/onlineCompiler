@@ -147,12 +147,11 @@ export default {
 </script>
 
 <style scoped>
+/* Minimal styling - basic layout only */
 .code-editor {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  background: #1e1e1e;
-  color: #d4d4d4;
 }
 
 .editor-header {
@@ -160,13 +159,7 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: #2d2d2d;
-  border-bottom: 1px solid #3e3e3e;
-}
-
-.editor-header h3 {
-  margin: 0;
-  color: #ffffff;
+  border-bottom: 1px solid #ccc;
 }
 
 .editor-actions {
@@ -176,34 +169,14 @@ export default {
 
 .run-button, .clear-button {
   padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.run-button {
-  background: #007acc;
-  color: white;
-}
-
-.run-button:hover:not(:disabled) {
-  background: #005a9e;
 }
 
 .run-button:disabled {
-  background: #666;
+  background: #ccc;
   cursor: not-allowed;
-}
-
-.clear-button {
-  background: #666;
-  color: white;
-}
-
-.clear-button:hover {
-  background: #888;
 }
 
 .editor-container {
@@ -213,13 +186,12 @@ export default {
 
 .editor {
   height: 100%;
-  font-family: 'Fira Code', 'Monaco', 'Consolas', monospace;
+  font-family: monospace;
 }
 
 .output-section {
   height: 300px;
-  background: #1e1e1e;
-  border-top: 1px solid #3e3e3e;
+  border-top: 1px solid #ccc;
   display: flex;
   flex-direction: column;
 }
@@ -229,27 +201,14 @@ export default {
   justify-content: space-between;
   align-items: center;
   padding: 0.5rem 1rem;
-  background: #2d2d2d;
-  border-bottom: 1px solid #3e3e3e;
-}
-
-.output-header h4 {
-  margin: 0;
-  color: #ffffff;
+  border-bottom: 1px solid #ccc;
 }
 
 .clear-output-button {
   padding: 0.25rem 0.5rem;
-  background: #666;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
   cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.clear-output-button:hover {
-  background: #888;
 }
 
 .output-container {
@@ -265,53 +224,32 @@ export default {
 .output pre {
   margin: 0;
   padding: 0.5rem;
-  border-radius: 4px;
   white-space: pre-wrap;
   word-wrap: break-word;
 }
 
 .output.success pre {
-  background: #1e3a1e;
-  color: #4ade80;
-  border: 1px solid #22c55e;
+  background: #f0f8f0;
+  border: 1px solid #90ee90;
 }
 
 .output.error pre {
-  background: #3a1e1e;
-  color: #f87171;
-  border: 1px solid #ef4444;
+  background: #fff0f0;
+  border: 1px solid #ffb6c1;
 }
 
 .ai-help-button {
   margin-top: 0.5rem;
   padding: 0.25rem 0.5rem;
-  background: #7c3aed;
-  color: white;
-  border: none;
-  border-radius: 4px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
   cursor: pointer;
-  font-size: 0.8rem;
-}
-
-.ai-help-button:hover {
-  background: #8b5cf6;
 }
 
 .ai-response {
-  background: #2a1e3a;
-  border: 1px solid #7c3aed;
-  border-radius: 4px;
+  border: 1px solid #ccc;
   padding: 1rem;
   margin-top: 1rem;
-}
-
-.ai-response h5 {
-  margin: 0 0 0.5rem 0;
-  color: #a78bfa;
-}
-
-.ai-response p {
-  margin: 0;
-  color: #d4d4d4;
+  background: #f9f9f9;
 }
 </style>

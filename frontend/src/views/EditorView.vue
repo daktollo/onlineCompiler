@@ -49,59 +49,38 @@ export default {
 </script>
 
 <style scoped>
+/* Minimal styling - basic layout only */
 .editor-view {
   height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #1e1e1e;
 }
 
 .app-header {
-  background: #2d2d2d;
-  border-bottom: 1px solid #3e3e3e;
-  padding: 0 1rem;
+  padding: 1rem;
+  border-bottom: 1px solid #ccc;
 }
 
 .header-content {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  height: 60px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.app-header h1 {
-  margin: 0;
-  color: #ffffff;
-  font-size: 1.5rem;
-  font-weight: 600;
 }
 
 .user-info {
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: #d4d4d4;
 }
 
 .logout-button {
-  background: #ef4444;
-  color: white;
-  border: none;
   padding: 0.5rem 1rem;
-  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
   cursor: pointer;
-  font-weight: 500;
-  transition: background-color 0.2s;
-}
-
-.logout-button:hover {
-  background: #dc2626;
 }
 
 .app-main {
   flex: 1;
-  overflow: hidden;
 }
 </style>

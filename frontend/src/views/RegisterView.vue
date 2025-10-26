@@ -113,19 +113,18 @@ export default {
 </script>
 
 <style scoped>
+/* Minimal styling - basic form layout only */
 .register-container {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   padding: 1rem;
 }
 
 .register-card {
   background: white;
-  border-radius: 12px;
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid #ccc;
   padding: 2rem;
   width: 100%;
   max-width: 400px;
@@ -133,22 +132,18 @@ export default {
 
 .register-card h2 {
   text-align: center;
-  margin-bottom: 0.5rem;
-  color: #333;
-  font-size: 2rem;
-  font-weight: 600;
+  margin-bottom: 1rem;
 }
 
 .register-card p {
   text-align: center;
-  color: #666;
   margin-bottom: 2rem;
 }
 
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 1rem;
 }
 
 .form-group {
@@ -157,38 +152,16 @@ export default {
   gap: 0.5rem;
 }
 
-.form-group label {
-  font-weight: 500;
-  color: #333;
-}
-
 .form-group input {
-  padding: 0.75rem;
-  border: 2px solid #e1e5e9;
-  border-radius: 8px;
-  font-size: 1rem;
-  transition: border-color 0.2s;
-}
-
-.form-group input:focus {
-  outline: none;
-  border-color: #667eea;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
 }
 
 .register-button {
-  background: #667eea;
-  color: white;
-  border: none;
-  padding: 0.75rem;
-  border-radius: 8px;
-  font-size: 1rem;
-  font-weight: 500;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
   cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.register-button:hover:not(:disabled) {
-  background: #5a6fd8;
 }
 
 .register-button:disabled {
@@ -199,26 +172,20 @@ export default {
 .error-message {
   background: #fee;
   color: #c33;
-  padding: 0.75rem;
-  border-radius: 8px;
+  padding: 0.5rem;
   border: 1px solid #fcc;
   text-align: center;
 }
 
 .login-link {
   text-align: center;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e1e5e9;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ccc;
 }
 
 .login-link a {
-  color: #667eea;
+  color: #0066cc;
   text-decoration: none;
-  font-weight: 500;
-}
-
-.login-link a:hover {
-  text-decoration: underline;
 }
 </style>

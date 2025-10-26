@@ -131,7 +131,9 @@ export const useCodeStore = defineStore("code", {
       this.outputLines = []; // Clear previous output lines
 
       try {
-        const response = await fetch("http://localhost:5000/api/code/execute_streaming", {
+        // Step 1: Get redirect information from backend
+        console.log("🔄 Getting redirect information from backend...");
+        const redirectResponse = await fetch("http://localhost:5000/api/code/execute_streaming", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -140,37 +142,76 @@ export const useCodeStore = defineStore("code", {
           body: JSON.stringify({ code }),
         });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+        if (!redirectResponse.ok) {
+          throw new Error(`Backend error! status: ${redirectResponse.status}`);
         }
 
-        const reader = response.body.getReader();
+        const redirectInfo = await redirectResponse.json();
+        console.log("📋 Redirect info received:", redirectInfo);
+
+        // Step 2: Make direct call to CodeManager
+        console.log("🚀 Making direct call to CodeManager...");
+        const directResponse = await fetch(redirectInfo.redirect_url, {
+          method: redirectInfo.method,
+          headers: redirectInfo.headers,
+          body: JSON.stringify(redirectInfo.payload),
+        });
+
+        if (!directResponse.ok) {
+          throw new Error(`CodeManager error! status: ${directResponse.status}`);
+        }
+
+        console.log("✅ Direct connection established, starting stream...");
+
+        // Step 3: Process streaming response
+        const reader = directResponse.body.getReader();
         const decoder = new TextDecoder();
         let buffer = "";
 
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
+        const processStream = async () => {
+          while (true) {
+            const { done, value } = await reader.read();
 
-          // Decode chunk and add to buffer
-          buffer += decoder.decode(value, { stream: true });
+            if (done) {
+              console.log("Stream completed");
+              break;
+            }
 
-          // Process complete lines
-          const lines = buffer.split("\n");
-          buffer = lines.pop() || ""; // Keep incomplete line in buffer
+            // Decode chunk and add to buffer
+            const chunk = decoder.decode(value, { stream: true });
+            console.log("Received chunk:", chunk);
+            buffer += chunk;
 
-          for (const line of lines) {
-            if (line.trim() && line.startsWith("data: ")) {
-              try {
-                const data = JSON.parse(line.slice(6));
-                console.log("Streaming data received:", data);
-                this.addOutputLine(data.type, data.line);
-              } catch (e) {
-                console.warn("Failed to parse streaming data:", line, e);
+            // Process line by line for better performance
+            const lines = buffer.split("\n");
+            buffer = lines.pop() || ""; // Keep incomplete line in buffer
+
+            for (const line of lines) {
+              if (line.trim() && line.startsWith("data: ")) {
+                try {
+                  const data = JSON.parse(line.slice(6));
+                  console.log("Streaming data received:", data);
+
+                  // Handle different output types
+                  if (data.type === "stdout" && data.line !== "") {
+                    this.addOutputLine("stdout", data.line);
+                  } else if (data.type === "stderr") {
+                    this.addOutputLine("stderr", data.line);
+                  } else if (data.type === "error") {
+                    this.addOutputLine("error", data.line);
+                  }
+
+                  // Force immediate UI update
+                  await nextTick();
+                } catch (e) {
+                  console.warn("Failed to parse streaming data:", line, e);
+                }
               }
             }
           }
-        }
+        };
+
+        await processStream();
 
         // Process any remaining data in buffer
         if (buffer.trim() && buffer.startsWith("data: ")) {
@@ -209,9 +250,8 @@ export const useCodeStore = defineStore("code", {
         this.error += content + "\n";
       }
 
-      // Force UI update
+      // Force UI update and scroll to bottom
       nextTick(() => {
-        // Scroll to bottom of output container
         const outputContainer = document.querySelector(".output-container");
         if (outputContainer) {
           outputContainer.scrollTop = outputContainer.scrollHeight;

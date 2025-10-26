@@ -1,3 +1,4 @@
+from uu import Error
 from flask import Flask, request, jsonify, Response
 from flask_cors import CORS
 from flask_socketio import SocketIO, emit
@@ -188,54 +189,20 @@ def execute_code_streaming(current_user):
     if not code:
         return jsonify({'error': 'Code is required'}), 400
 
-    def generate():
-        try:
-            # Forward to CodeManager streaming endpoint
-            response = requests.post(
-                'http://manager:5001/run_code_streaming',
-                json={'user_id': current_user['user_id'], 'code': code},
-                stream=True,
-                timeout=30
-            )
-            
-            for line in response.iter_lines():
-                if line:
-                    decoded_line = line.decode('utf-8')
-                    if decoded_line.startswith('data: '):
-                        try:
-                            data = json.loads(decoded_line[6:])
-                            
-                            # Send to frontend via WebSocket
-                            socketio.emit('code_output', {
-                                'type': data['type'],
-                                'line': data['line'],
-                                'user_id': current_user['user_id']
-                            })
-                            
-                            # Also send via HTTP stream
-                            yield decoded_line + '\n'
-                        except json.JSONDecodeError:
-                            # If JSON parsing fails, send as is
-                            yield decoded_line + '\n'
-                        
-        except requests.exceptions.RequestException as e:
-            error_msg = f"Code execution service error: {str(e)}"
-            socketio.emit('code_output', {
-                'type': 'error',
-                'line': error_msg,
-                'user_id': current_user['user_id']
-            })
-            yield f"data: {json.dumps({'type': 'error', 'line': error_msg})}\n\n"
-        except Exception as e:
-            error_msg = f"Unexpected error: {str(e)}"
-            socketio.emit('code_output', {
-                'type': 'error',
-                'line': error_msg,
-                'user_id': current_user['user_id']
-            })
-            yield f"data: {json.dumps({'type': 'error', 'line': error_msg})}\n\n"
-
-    return Response(generate(), content_type='text/event-stream')
+    # Return redirect information to client
+    redirect_info = {
+        'redirect_url': 'http://localhost:5001/run_code_streaming',
+        'method': 'POST',
+        'headers': {
+            'Content-Type': 'application/json'
+        },
+        'payload': {
+            'user_id': current_user['user_id'],
+            'code': code
+        }
+    }
+    
+    return jsonify(redirect_info), 200
 
 # AI Error Handler Route
 @app.route('/api/ai/error-handler', methods=['POST'])

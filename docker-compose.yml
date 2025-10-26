@@ -36,6 +36,7 @@ services:
       - ollama
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
+      - /home/daktollo/SEP/KG/onlineCompiler/codeManager:/app
     networks:
       - batman
 

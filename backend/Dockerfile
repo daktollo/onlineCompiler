@@ -5,7 +5,7 @@ WORKDIR /app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# COPY . .  # Commented out for development - using volume mount instead
 
 EXPOSE 5000
 

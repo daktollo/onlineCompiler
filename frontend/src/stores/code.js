@@ -19,7 +19,7 @@ export const useCodeStore = defineStore("code", {
       }
 
       this.isExecuting = true;
-      this.error = "";
+      this.error = null; // Clear previous errors
       this.output = "";
 
       try {
@@ -35,15 +35,23 @@ export const useCodeStore = defineStore("code", {
           }
         );
 
+        console.log("Response data:", response.data);
+
         if (response.data.error) {
           this.error = response.data.error;
+          console.log("Error set:", this.error);
         } else {
           this.output = response.data.output;
+          console.log("Output set:", this.output);
         }
 
         return response.data;
       } catch (error) {
-        this.error = error.response?.data?.error || "Code execution failed";
+        if (error.response?.status === 429) {
+          this.error = "Too many requests. Please wait a moment before trying again.";
+        } else {
+          this.error = error.response?.data?.error || "Code execution failed";
+        }
         throw error;
       } finally {
         this.isExecuting = false;

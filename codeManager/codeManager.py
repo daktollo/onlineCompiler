@@ -4,10 +4,12 @@ from flask import Flask, request, jsonify
 app = Flask(__name__)
 
 def execute_python_in_container(container_name, python_code):
+    # Execute Python code by piping it to python3 stdin
     result = subprocess.run(
         [
-            "docker", "exec", container_name, "python3", "-c", python_code
+            "docker", "exec", "-i", container_name, "python3"
         ],
+        input=python_code.encode('utf-8'),
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE
     )

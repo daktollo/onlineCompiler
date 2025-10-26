@@ -1,11 +1,11 @@
-FROM node:18-alpine
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
 
-COPY . .
+# COPY . .  # Commented out for development - using volume mount instead
 
 EXPOSE 3000
 

@@ -49,6 +49,7 @@
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import { EditorView, basicSetup } from 'codemirror'
 import { python } from '@codemirror/lang-python'
 import { oneDark } from '@codemirror/theme-one-dark'
@@ -61,7 +62,8 @@ export default {
     const editorView = ref(null)
     const codeStore = useCodeStore()
     
-    const { code, output, error, isExecuting, aiResponse } = codeStore
+    // Use storeToRefs to make store properties reactive
+    const { code, output, error, isExecuting, aiResponse } = storeToRefs(codeStore)
 
     onMounted(() => {
       if (editorElement.value) {
@@ -93,7 +95,11 @@ export default {
 
     const executeCode = async () => {
       try {
-        await codeStore.executeCode(codeStore.code)
+        console.log('Executing code:', codeStore.code);
+        const result = await codeStore.executeCode(codeStore.code);
+        console.log('Execution result:', result);
+        console.log('Current output:', codeStore.output);
+        console.log('Current error:', codeStore.error);
       } catch (error) {
         console.error('Code execution error:', error)
       }

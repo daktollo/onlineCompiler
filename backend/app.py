@@ -27,6 +27,14 @@ users = db['users']
 # Rate limiting storage
 user_requests = {}
 
+@app.route('/')
+def home():
+    return jsonify({'message': 'Backend API is running!', 'status': 'success'})
+
+@app.route('/api/health')
+def health():
+    return jsonify({'status': 'healthy', 'message': 'Backend is running'})
+
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
@@ -60,7 +68,7 @@ def check_rate_limit(user_id):
         user_requests[user_id] = {'count': 0, 'time': now}
     
     user_requests[user_id]['count'] += 1
-    return user_requests[user_id]['count'] <= 5  # Max 5 requests per minute
+    return user_requests[user_id]['count'] <= 30  # Max 30 requests per minute
 
 # Authentication Routes
 @app.route('/api/auth/register', methods=['POST'])

@@ -193,12 +193,14 @@ export default {
 
 .editor-container {
   flex: 1;
-  overflow: hidden;
+  overflow: auto;
+  min-height: 0;
 }
 
 .editor {
   height: 100%;
   font-family: monospace;
+  overflow: auto;
 }
 
 .output-section {

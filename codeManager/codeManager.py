@@ -92,7 +92,7 @@ def create_container(user_id):
             '--name', container_name,
             '--rm',
             '--network', network_name,
-            'python:3.10',
+            'block-runner:latest',
             'tail', '-f', '/dev/null'
         ], check=True)
         print(f"Container {container_name} created successfully")

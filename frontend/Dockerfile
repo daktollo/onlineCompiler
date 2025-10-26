@@ -5,7 +5,7 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
-# COPY . .  # Commented out for development - using volume mount instead
+COPY . .
 
 EXPOSE 3000
 

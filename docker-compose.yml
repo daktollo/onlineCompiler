@@ -5,8 +5,8 @@ services:
     container_name: backend
     ports:
       - "5000:5000"
-    volumes:
-      - /home/daktollo/SEP/KG/onlineCompiler/backend:/app
+    #volumes:
+      #- /home/daktollo/SEP/KG/onlineCompiler/backend:/app
     depends_on:
       - manager
       - mongodb
@@ -19,15 +19,15 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
-    volumes:
-      - /home/daktollo/SEP/KG/onlineCompiler/frontend:/app
+    #volumes:
+      #- /home/daktollo/SEP/KG/onlineCompiler/frontend:/app
     depends_on:
       - backend
     networks:
       - batman
 
   manager:
-    image: code_manager:latest
+    image: code_manager:runner
     container_name: code_manager
     ports:
       - "5001:5001"
@@ -36,7 +36,7 @@ services:
       - ollama
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - /home/daktollo/SEP/KG/onlineCompiler/codeManager:/app
+      #- /home/daktollo/SEP/KG/onlineCompiler/codeManager:/app
     networks:
       - batman
 

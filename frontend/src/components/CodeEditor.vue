@@ -34,18 +34,39 @@
       </div>
       
       <div class="output-container" :class="{ 'collapsed': !isOutputExpanded }">
-        <div v-if="output" class="output success">
+        <!-- Streaming Output Lines -->
+        <div v-if="outputLines.length > 0" class="streaming-output">
+          <div 
+            v-for="line in outputLines" 
+            :key="line.id"
+            class="output-line"
+            :class="line.type"
+          >
+            <pre>{{ line.content }}</pre>
+          </div>
+        </div>
+        
+        <!-- Legacy Output (for compatibility) -->
+        <div v-if="output && outputLines.length === 0" class="output success">
           <pre>{{ output }}</pre>
         </div>
-        <div v-if="error" class="output error">
+        <div v-if="error && outputLines.length === 0" class="output error">
           <pre>{{ error }}</pre>
           <button @click="getAIHelp" class="ai-help-button">
             Get AI Help
           </button>
         </div>
+        
+        <!-- AI Response -->
         <div v-if="aiResponse" class="ai-response">
           <h5>AI Assistant:</h5>
           <p>{{ aiResponse }}</p>
+        </div>
+        
+        <!-- Streaming Indicator -->
+        <div v-if="isStreaming" class="streaming-indicator">
+          <div class="spinner"></div>
+          <span>Executing...</span>
         </div>
       </div>
     </div>
@@ -69,12 +90,12 @@ export default {
     const isOutputExpanded = ref(true)
     
     // Use storeToRefs to make store properties reactive
-    const { code, output, error, isExecuting, aiResponse } = storeToRefs(codeStore)
+    const { code, output, error, isExecuting, aiResponse, outputLines, isStreaming } = storeToRefs(codeStore)
 
     onMounted(() => {
       if (editorElement.value) {
         editorView.value = new EditorView({
-          doc: 'print("Hello, World!")\n',
+          doc: '# Test streaming output\nimport time\n\nprint("Starting...")\nfor i in range(5):\n    print(f"Count: {i}")\n    time.sleep(1)\nprint("Done!")\n\n# Test infinite loop (uncomment to test)\n# while True:\n#     print("Infinite loop")\n#     time.sleep(1)',
           extensions: [
             basicSetup,
             python(),
@@ -102,10 +123,8 @@ export default {
     const executeCode = async () => {
       try {
         console.log('Executing code:', codeStore.code);
-        const result = await codeStore.executeCode(codeStore.code);
+        const result = await codeStore.executeCodeStreaming(codeStore.code);
         console.log('Execution result:', result);
-        console.log('Current output:', codeStore.output);
-        console.log('Current error:', codeStore.error);
       } catch (error) {
         console.error('Code execution error:', error)
       }
@@ -147,6 +166,8 @@ export default {
       error,
       isExecuting,
       aiResponse,
+      outputLines,
+      isStreaming,
       isOutputExpanded,
       executeCode,
       clearEditor,
@@ -317,5 +338,63 @@ export default {
   padding: 1rem;
   margin-top: 1rem;
   background: #f9f9f9;
+}
+
+/* Streaming Output Styles */
+.streaming-output {
+  margin-bottom: 1rem;
+}
+
+.output-line {
+  margin-bottom: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 0.9rem;
+}
+
+.output-line.stdout {
+  background: #f0f8f0;
+  border-left: 3px solid #90ee90;
+  color: #2d5a2d;
+}
+
+.output-line.stderr {
+  background: #fff0f0;
+  border-left: 3px solid #ffb6c1;
+  color: #8b0000;
+}
+
+.output-line.error {
+  background: #ffe6e6;
+  border-left: 3px solid #ff6b6b;
+  color: #cc0000;
+  font-weight: bold;
+}
+
+.streaming-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  background: #e3f2fd;
+  border: 1px solid #2196f3;
+  border-radius: 4px;
+  color: #1976d2;
+  font-size: 0.9rem;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e3f2fd;
+  border-top: 2px solid #2196f3;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
 }
 </style>

@@ -10,9 +10,9 @@ class Block:
         self.x = x
         self.y = y
         self.display_id = display_id
-        self._color = (255, 255, 255)  # RGB tuple
+        self._color = (0, 0, 0)  # RGB tuple
         self._brightness = 1.0  # 0-1 float
-        self._on = False  # boolean
+        self._on = True  # boolean
     
     @property
     def color(self) -> Tuple[int, int, int]:

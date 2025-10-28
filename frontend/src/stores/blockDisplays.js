@@ -14,7 +14,7 @@ export const useBlockDisplaysStore = defineStore("blockDisplays", {
         const height = size?.height ?? 8;
         const blocks = Array.from({ length: height }, () =>
           Array.from({ length: width }, () => ({
-            color: [255, 255, 255],
+            color: [0, 0, 0],
             brightness: 1.0,
             on: false,
           }))

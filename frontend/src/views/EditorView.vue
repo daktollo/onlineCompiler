@@ -26,6 +26,19 @@
           <CodeEditor />
         </div>
       </div>
+
+      <!-- Frameless draggable DisplayBlock panels -->
+      <div class="matrix-layer">
+        <DraggableContainer
+          v-for="(id, idx) in displayIds"
+          :key="id"
+          :id="`display-${id}`"
+          :initialX="60 + idx * 40"
+          :initialY="200 + idx * 40"
+        >
+          <DisplayMatrix :displayId="id" :pixelSize="16" :gap="2" />
+        </DraggableContainer>
+      </div>
     </div>
   </div>
 </template>
@@ -34,19 +47,26 @@
 import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import { useBlockDisplaysStore } from '../stores/blockDisplays'
 import CodeEditor from '../components/CodeEditor.vue'
+import DraggableContainer from '../components/DraggableContainer.vue'
+import DisplayMatrix from '../components/DisplayMatrix.vue'
 
 export default {
   name: 'EditorView',
   components: {
-    CodeEditor
+    CodeEditor,
+    DraggableContainer,
+    DisplayMatrix
   },
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
+    const blockStore = useBlockDisplaysStore()
     const draggableWindow = ref(null)
     
     const user = computed(() => authStore.user)
+    const displayIds = computed(() => Object.keys(blockStore.byId))
     
     // Drag functionality
     let isDragging = false
@@ -125,6 +145,7 @@ export default {
 
     return {
       user,
+      displayIds,
       draggableWindow,
       handleLogout,
       startDrag,
@@ -183,6 +204,13 @@ export default {
   height: 100vh;
   background: rgba(0, 0, 0, 0.1);
   z-index: 100;
+}
+
+.matrix-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  pointer-events: none; /* allow drag via container while matrix pixels ignore pointer */
 }
 
 /* Draggable window */

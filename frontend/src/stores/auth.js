@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import axios from "axios";
+import { startBlockEvents, stopBlockEvents } from "../services/blockEvents";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
@@ -26,6 +27,9 @@ export const useAuthStore = defineStore("auth", {
 
         localStorage.setItem("token", this.token);
 
+        // Start SSE stream once authenticated
+        startBlockEvents(this.user?.id || this.user?._id || this.user?.user_id || this.user);
+
         return { success: true, data: response.data };
       } catch (error) {
         return {
@@ -48,6 +52,9 @@ export const useAuthStore = defineStore("auth", {
 
         localStorage.setItem("token", this.token);
 
+        // Start SSE after register
+        startBlockEvents(this.user?.id || this.user?._id || this.user?.user_id || this.user);
+
         return { success: true, data: response.data };
       } catch (error) {
         return {
@@ -69,6 +76,10 @@ export const useAuthStore = defineStore("auth", {
 
         this.user = response.data.user;
         this.isAuthenticated = true;
+
+        // Ensure SSE is started after token verification as well
+        startBlockEvents(this.user?.id || this.user?._id || this.user?.user_id || this.user);
+
         return true;
       } catch (error) {
         this.logout();
@@ -81,6 +92,8 @@ export const useAuthStore = defineStore("auth", {
       this.token = null;
       this.isAuthenticated = false;
       localStorage.removeItem("token");
+      // Stop SSE when logging out
+      stopBlockEvents();
     },
   },
 });

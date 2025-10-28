@@ -82,6 +82,24 @@ class BlockDisplay:
         for x in range(8):
             for y in range(8):
                 self._blocks[(x, y)] = Block(x, y, self.display_id)
+        
+        # Notify manager of display creation
+        try:
+            user_id = os.environ.get('BLOCK_USER_ID')
+            if user_id:
+                payload = {
+                    'display_id': self.display_id,
+                    'user_id': user_id,
+                    'size': {'width': 8, 'height': 8},
+                    'timestamp': time.time(),
+                }
+                requests.post(
+                    'http://manager:5001/display_create',
+                    json=payload,
+                    timeout=1.0
+                )
+        except Exception:
+            pass
     
     def __getitem__(self, key):
         """Allow access like display[x, y] or display[x][y]"""

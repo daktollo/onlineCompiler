@@ -204,6 +204,22 @@ def execute_code_streaming(current_user):
     
     return jsonify(redirect_info), 200
 
+# Stop Code Execution Route
+@app.route('/api/code/stop', methods=['POST'])
+@token_required
+def stop_code(current_user):
+    try:
+        resp = requests.post(
+            'http://manager:5001/stop_container',
+            json={'user_id': current_user['user_id']},
+            timeout=10
+        )
+        if resp.status_code >= 400:
+            return jsonify({'error': 'Failed to stop container', 'detail': resp.text}), resp.status_code
+        return jsonify(resp.json()), 200
+    except requests.exceptions.RequestException as e:
+        return jsonify({'error': f'Code stop service error: {str(e)}'}), 500
+
 # AI Error Handler Route
 @app.route('/api/ai/error-handler', methods=['POST'])
 @token_required

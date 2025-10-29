@@ -37,7 +37,7 @@
           :initialY="200 + idx * 40"
           handleSelector=".panel-header"
         >
-          <DisplayMatrix :displayId="id" :pixelSize="16" :gap="2" />
+          <DisplayMatrix :displayId="id" :pixelSize="16" :gap="3" />
         </DraggableContainer>
       </div>
     </div>
@@ -49,6 +49,7 @@ import { computed, ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
 import { useBlockDisplaysStore } from '../stores/blockDisplays'
+import { useCodeStore } from '../stores/code'
 import CodeEditor from '../components/CodeEditor.vue'
 import DraggableContainer from '../components/DraggableContainer.vue'
 import DisplayMatrix from '../components/DisplayMatrix.vue'
@@ -63,6 +64,7 @@ export default {
   setup() {
     const router = useRouter()
     const authStore = useAuthStore()
+    const codeStore = useCodeStore()
     const blockStore = useBlockDisplaysStore()
     const draggableWindow = ref(null)
     
@@ -139,7 +141,12 @@ export default {
       document.removeEventListener('mouseup', stopDrag)
     })
 
-    const handleLogout = () => {
+    const handleLogout = async () => {
+      try {
+        await codeStore.stopExecution()
+      } catch (e) {
+        // ignore errors on stop
+      }
       authStore.logout()
       router.push('/login')
     }

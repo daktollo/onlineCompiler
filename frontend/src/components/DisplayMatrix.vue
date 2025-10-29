@@ -1,21 +1,18 @@
 <template>
   <div v-if="display" class="display-panel">
     <div class="panel-header">DisplayBlock: {{ display.displayId }}</div>
-    <div
-      class="matrix"
-      :style="{
-        gridTemplateColumns: `repeat(${display.width}, ${pixelSize}px)`,
-        gridTemplateRows: `repeat(${display.height}, ${pixelSize}px)`,
-        gap: `${gap}px`,
-      }"
-    >
+    <div class="matrix-surface">
       <div
-        v-for="(row, y) in display.blocks"
-        :key="`row-${y}`"
+        class="matrix"
+        :style="{
+          gridTemplateColumns: `repeat(${display.width}, ${pixelSize}px)`,
+          gridTemplateRows: `repeat(${display.height}, ${pixelSize}px)`,
+          gap: `${gap}px`,
+        }"
       >
         <div
-          v-for="(cell, x) in row"
-          :key="`${x}-${y}`"
+          v-for="(cell, idx) in flatBlocks"
+          :key="idx"
           class="pixel"
           :style="pixelStyle(cell)"
         />
@@ -39,6 +36,13 @@ const props = defineProps({
 const store = useBlockDisplaysStore()
 const display = computed(() => store.byId[props.displayId])
 
+// Flatten rows so pixels themselves are grid items; enables proper CSS grid gap
+const flatBlocks = computed(() => {
+  const d = display.value
+  if (!d) return []
+  return d.blocks.flat()
+})
+
 function pixelStyle(cell) {
   const [r, g, b] = cell.color || [255, 255, 255]
   return {
@@ -53,20 +57,30 @@ function pixelStyle(cell) {
 
 <style scoped>
 .display-panel {
-  border: 1px solid #000;
-  border-radius: 6px;
-  background: #fff;
+  border: 2px solid #111827; /* dark bezel */
+  border-radius: 10px;
+  background: #0f172a; /* slate-900 */
   width: max-content;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255,255,255,0.03);
 }
 .panel-header {
   text-align: center;
-  font-weight: 600;
-  padding: 6px 12px;
-  border-bottom: 1px solid #000;
-  border-top: 4px solid #000;
+  font-weight: 700;
+  padding: 10px 14px;
+  background: linear-gradient(#f8fafc, #e5e7eb); /* subtle modern header */
+  color: #111827;
+  border-bottom: 1px solid #cbd5e1;
+  border-top: 6px solid #111827; /* thicker top */
   cursor: move;
   user-select: none;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;
+}
+.matrix-surface {
+  padding: 12px; /* inner bezel padding around the grid */
+  background: radial-gradient(120% 100% at 50% 0%, #0b0f14 0%, #0a0e12 60%, #090c10 100%);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
 }
 .matrix {
   display: grid;
@@ -76,8 +90,9 @@ function pixelStyle(cell) {
   height: 1px;
 }
 .pixel {
-  border-radius: 2px;
-  border: 1px solid #000;
+  border-radius: 3px;
+  border: 1px solid #ffffff; /* white separators between black pixels */
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.05) inset;
 }
 </style>
 

@@ -145,11 +145,17 @@ def remove_container(container_name):
     except Exception as e:
         print(f"Error removing container {container_name}: {e}")
 
-def forward_to_container(user_id, code):
+def ensure_fresh_container(user_id):
+    """Remove any existing container for the user and create a fresh one."""
     container_name = f"code_runner_{user_id}"
-    if not is_container_running(container_name):
-        remove_container(container_name)
-        create_container(user_id)
+    # Best-effort removal; ignore errors
+    remove_container(container_name)
+    create_container(user_id)
+
+def forward_to_container(user_id, code):
+    # Always recreate to kill any lingering processes
+    ensure_fresh_container(user_id)
+    container_name = f"code_runner_{user_id}"
     if is_container_running(container_name):
         result = execute_python_in_container(container_name, code)
         return result
@@ -180,11 +186,10 @@ def run_code_streaming():
     if not user_id or not code:
         return jsonify({"error": "Kullanıcı ID ve kod gereklidir."}), 400
     
+    # Always recreate container to ensure no previous processes are running
+    ensure_fresh_container(user_id)
     container_name = f"code_runner_{user_id}"
-    if not is_container_running(container_name):
-        remove_container(container_name)
-        create_container(user_id)
-    
+
     if not is_container_running(container_name):
         return jsonify({"error": "Konteyner çalışmıyor."}), 500
     
@@ -225,6 +230,22 @@ def run_code_streaming():
                     process.kill()
     
     return Response(generate(), content_type='text/event-stream')
+
+
+@app.route('/stop_container', methods=['POST'])
+def stop_container():
+    """Force-stop and remove the current user's code runner container."""
+    data = request.json or {}
+    user_id = data.get('user_id')
+    if not user_id:
+        return jsonify({"error": "Kullanıcı ID gereklidir."}), 400
+
+    container_name = f"code_runner_{user_id}"
+    try:
+        remove_container(container_name)
+        return jsonify({"status": "stopped", "container": container_name}), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
 
 
 @app.route('/events', methods=['GET'])

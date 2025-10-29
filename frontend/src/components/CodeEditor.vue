@@ -10,6 +10,13 @@
         >
           {{ isExecuting ? 'Running...' : 'Run Code' }}
         </button>
+        <button 
+          @click="stopExecution"
+          :disabled="!isExecuting && !isStreaming"
+          class="stop-button"
+        >
+          Stop
+        </button>
         <button @click="clearEditor" class="clear-button">
           Clear
         </button>
@@ -159,6 +166,14 @@ export default {
       isOutputExpanded.value = !isOutputExpanded.value
     }
 
+    const stopExecution = async () => {
+      try {
+        await codeStore.stopExecution()
+      } catch (error) {
+        console.error('Stop error:', error)
+      }
+    }
+
     return {
       editorElement,
       code,
@@ -173,7 +188,8 @@ export default {
       clearEditor,
       clearOutput,
       getAIHelp,
-      toggleOutput
+      toggleOutput,
+      stopExecution
     }
   }
 }
@@ -200,11 +216,15 @@ export default {
   gap: 0.5rem;
 }
 
-.run-button, .clear-button {
+.run-button, .clear-button, .stop-button {
   padding: 0.5rem 1rem;
   border: 1px solid #ccc;
   background: #f5f5f5;
   cursor: pointer;
+}
+
+.stop-button {
+  background: #ffecec;
 }
 
 .run-button:disabled {

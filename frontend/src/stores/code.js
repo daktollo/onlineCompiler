@@ -233,6 +233,31 @@ export const useCodeStore = defineStore("code", {
       }
     },
 
+    async stopExecution() {
+      const authStore = useAuthStore();
+      if (!authStore.token) {
+        return { success: false, error: "Not authenticated" };
+      }
+      try {
+        const resp = await fetch("http://localhost:5000/api/code/stop", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${authStore.token}`,
+          },
+          body: JSON.stringify({}),
+        });
+        const data = await resp.json().catch(() => ({}));
+        this.isExecuting = false;
+        this.isStreaming = false;
+        return { success: resp.ok, data };
+      } catch (e) {
+        this.isExecuting = false;
+        this.isStreaming = false;
+        return { success: false, error: e?.message || String(e) };
+      }
+    },
+
     addOutputLine(type, content) {
       const line = {
         type: type,

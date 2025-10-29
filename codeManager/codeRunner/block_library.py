@@ -173,7 +173,7 @@ class BlockDisplay:
         """Turn off all blocks"""
         for x in range(8):
             for y in range(8):
-                self[x, y].on = False
+                self[x, y].color = (0,0,0)
     
     def fill(self, color: Tuple[int, int, int] = (255, 255, 255), brightness: float = 1.0):
         """Fill all blocks with same color and brightness"""

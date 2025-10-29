@@ -87,6 +87,7 @@ import { EditorView, basicSetup } from 'codemirror'
 import { python } from '@codemirror/lang-python'
 import { oneDark } from '@codemirror/theme-one-dark'
 import { useCodeStore } from '../stores/code'
+import { useBlockDisplaysStore } from '../stores/blockDisplays'
 
 export default {
   name: 'CodeEditor',
@@ -94,6 +95,7 @@ export default {
     const editorElement = ref(null)
     const editorView = ref(null)
     const codeStore = useCodeStore()
+    const blockStore = useBlockDisplaysStore()
     const isOutputExpanded = ref(true)
     
     // Use storeToRefs to make store properties reactive
@@ -129,6 +131,8 @@ export default {
 
     const executeCode = async () => {
       try {
+        // Clear existing displays on stage before a new run
+        blockStore.reset()
         console.log('Executing code:', codeStore.code);
         const result = await codeStore.executeCodeStreaming(codeStore.code);
         console.log('Execution result:', result);

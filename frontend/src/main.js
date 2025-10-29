@@ -1,14 +1,20 @@
-import './assets/main.css'
+import "./assets/main.css";
 
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { createApp } from "vue";
+import { createPinia } from "pinia";
+import { useAuthStore } from "./stores/auth";
 
-import App from './App.vue'
-import router from './router'
+import App from "./App.vue";
+import router from "./router";
 
-const app = createApp(App)
+const app = createApp(App);
 
-app.use(createPinia())
-app.use(router)
+const pinia = createPinia();
+app.use(pinia);
+app.use(router);
 
-app.mount('#app')
+// Hydrate user on refresh and start SSE
+const auth = useAuthStore();
+auth.verifyToken().catch(() => {});
+
+app.mount("#app");

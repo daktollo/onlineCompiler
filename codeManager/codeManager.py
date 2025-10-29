@@ -200,12 +200,18 @@ def run_code_streaming():
     def generate():
         """Generate streaming response"""
         try:
+            last_ping = time.time()
             while True:
                 try:
                     # Get output from queue with timeout
                     output_type, line = output_queue.get(timeout=0.1)
                     yield f"data: {json.dumps({'type': output_type, 'line': line})}\n\n"
                 except queue.Empty:
+                    # Heartbeat to keep connection alive during long silences
+                    now = time.time()
+                    if process.poll() is None and (now - last_ping) >= 10:
+                        yield "data: {\"type\": \"ping\"}\n\n"
+                        last_ping = now
                     # Check if process is still running
                     if process.poll() is not None:
                         # Process finished, check for any remaining output

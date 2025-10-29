@@ -131,6 +131,8 @@ export const useCodeStore = defineStore("code", {
       this.outputLines = []; // Clear previous output lines
 
       try {
+        let completed = false;
+        let hadNetworkError = false;
         // Step 1: Get redirect information from backend
         console.log("🔄 Getting redirect information from backend...");
         const redirectResponse = await fetch("http://localhost:5000/api/code/execute_streaming", {
@@ -212,6 +214,7 @@ export const useCodeStore = defineStore("code", {
         };
 
         await processStream();
+        completed = true;
 
         // Process any remaining data in buffer
         if (buffer.trim() && buffer.startsWith("data: ")) {
@@ -225,28 +228,49 @@ export const useCodeStore = defineStore("code", {
 
         return { success: true };
       } catch (error) {
-        this.addOutputLine("error", error.message);
-        throw error;
+        const msg = error && error.message ? String(error.message) : String(error);
+        // Suppress noisy fetch/network errors; keep Stop enabled
+        if (/NetworkError|Failed to fetch|The user aborted a request/i.test(msg)) {
+          console.warn("Streaming fetch warning:", msg);
+          hadNetworkError = true;
+          return { success: false, transient: true };
+        } else {
+          this.addOutputLine("error", msg);
+          throw error;
+        }
       } finally {
-        this.isExecuting = false;
-        this.isStreaming = false;
+        if (completed) {
+          this.isExecuting = false;
+          this.isStreaming = false;
+        } else if (hadNetworkError) {
+          // Keep flags true so user can press Stop to kill the container
+          this.isExecuting = true;
+          this.isStreaming = true;
+        } else {
+          this.isExecuting = false;
+          this.isStreaming = false;
+        }
       }
     },
 
-    async stopExecution() {
+    async stopExecution(options = {}) {
       const authStore = useAuthStore();
       if (!authStore.token) {
         return { success: false, error: "Not authenticated" };
       }
       try {
-        const resp = await fetch("http://localhost:5000/api/code/stop", {
+        const fetchOptions = {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${authStore.token}`,
           },
           body: JSON.stringify({}),
-        });
+        };
+        if (options.keepalive) {
+          fetchOptions.keepalive = true;
+        }
+        const resp = await fetch("http://localhost:5000/api/code/stop", fetchOptions);
         const data = await resp.json().catch(() => ({}));
         this.isExecuting = false;
         this.isStreaming = false;

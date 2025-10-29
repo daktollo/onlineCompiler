@@ -1,6 +1,6 @@
 <template>
   <div v-if="display" class="display-panel">
-    <div class="panel-header">DisplayBlock: {{ display.displayId }}</div>
+    <div class="panel-header">{{ display.displayId }}</div>
     <div class="matrix-surface">
       <div
         class="matrix"

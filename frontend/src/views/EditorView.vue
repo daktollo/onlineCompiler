@@ -134,11 +134,27 @@ export default {
         draggableWindow.value.style.left = '50px'
         draggableWindow.value.style.top = '100px'
       }
+
+      // Stop running code when page is refreshed/closed (best-effort)
+      const stopOnUnload = () => {
+        try {
+          codeStore.stopExecution({ keepalive: true })
+        } catch (e) {
+          // ignore
+        }
+      }
+      window.addEventListener('beforeunload', stopOnUnload)
+      // Save reference to remove later
+      ;(window).__stopOnUnloadHandler = stopOnUnload
     })
 
     onUnmounted(() => {
       document.removeEventListener('mousemove', onDrag)
       document.removeEventListener('mouseup', stopDrag)
+      if ((window).__stopOnUnloadHandler) {
+        window.removeEventListener('beforeunload', (window).__stopOnUnloadHandler)
+        ;(window).__stopOnUnloadHandler = null
+      }
     })
 
     const handleLogout = async () => {

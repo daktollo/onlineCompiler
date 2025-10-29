@@ -15,6 +15,7 @@ const props = defineProps({
   id: { type: String, required: true },
   initialX: { type: Number, default: 40 },
   initialY: { type: Number, default: 40 },
+  handleSelector: { type: String, default: '' },
 })
 
 const x = ref(0)
@@ -48,6 +49,7 @@ watch([x, y], () => {
 })
 
 function onPointerDown(e) {
+  if (props.handleSelector && !e.target.closest(props.handleSelector)) return
   dragging = true
   startX = e.clientX
   startY = e.clientY
@@ -77,7 +79,7 @@ function onPointerUp() {
   top: 0;
   left: 0;
   will-change: transform;
-  cursor: move;
+  cursor: default;
   user-select: none;
   -webkit-user-drag: none;
 }

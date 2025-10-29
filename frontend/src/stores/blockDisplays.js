@@ -16,7 +16,7 @@ export const useBlockDisplaysStore = defineStore("blockDisplays", {
           Array.from({ length: width }, () => ({
             color: [0, 0, 0],
             brightness: 1.0,
-            on: false,
+            on: true,
           }))
         );
         this.byId[display_id] = {

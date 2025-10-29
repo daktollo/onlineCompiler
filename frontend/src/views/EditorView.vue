@@ -35,6 +35,7 @@
           :id="`display-${id}`"
           :initialX="60 + idx * 40"
           :initialY="200 + idx * 40"
+          handleSelector=".panel-header"
         >
           <DisplayMatrix :displayId="id" :pixelSize="16" :gap="2" />
         </DraggableContainer>

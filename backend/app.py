@@ -17,8 +17,8 @@ app.config['SECRET_KEY'] = 'your-secret-key-change-in-production'
 app.config['JWT_SECRET_KEY'] = 'jwt-secret-string-change-in-production'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=24)
 
-CORS(app, origins=["http://localhost:3000", "http://localhost:5173"])  # Vue.js dev server
-socketio = SocketIO(app, cors_allowed_origins=["http://localhost:3000", "http://localhost:5173"])
+CORS(app, origins=["http://localhost:6610", "http://localhost:5173"])  # Vue.js dev server
+socketio = SocketIO(app, cors_allowed_origins=["http://localhost:6610", "http://localhost:5173"])
 
 # MongoDB connection
 client = MongoClient("mongodb://admin:password@mongo_db:27017/")
@@ -279,4 +279,4 @@ def handle_join_room(current_user, data):
     emit('joined_room', {'room': room})
 
 if __name__ == '__main__':
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+    socketio.run(app, host="0.0.0.0", port=6600, debug=True)

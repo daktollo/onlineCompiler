@@ -4,13 +4,13 @@ services:
     build: ./backend
     container_name: backend
     ports:
-      - "5000:5000"
+      - "6600:6600"
     #volumes:
       #- /home/daktollo/SEP/KG/onlineCompiler/backend:/app
     depends_on:
       - manager
       - mongodb
-      - ollama
+      #- ollama
     networks:
       - batman
 
@@ -18,7 +18,7 @@ services:
     build: ./frontend
     container_name: frontend
     ports:
-      - "3000:3000"
+      - "6610:6610"
     #volumes:
       #- /home/daktollo/SEP/KG/onlineCompiler/frontend:/app
     depends_on:

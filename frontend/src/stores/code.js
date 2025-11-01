@@ -27,7 +27,7 @@ export const useCodeStore = defineStore("code", {
 
       try {
         const response = await axios.post(
-          "http://localhost:5000/api/code/execute",
+          "http://localhost:6600/api/code/execute",
           {
             code,
           },
@@ -68,7 +68,7 @@ export const useCodeStore = defineStore("code", {
       }
 
       try {
-        const response = await fetch("http://localhost:5000/api/ai/error-handler", {
+        const response = await fetch("http://localhost:6600/api/ai/error-handler", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -130,12 +130,15 @@ export const useCodeStore = defineStore("code", {
       this.output = "";
       this.outputLines = []; // Clear previous output lines
 
+      // Flags must be defined outside try so finally can access them
+      let completed = false;
+      let hadNetworkError = false;
+      let gotDone = false;
+
       try {
-        let completed = false;
-        let hadNetworkError = false;
         // Step 1: Get redirect information from backend
         console.log("🔄 Getting redirect information from backend...");
-        const redirectResponse = await fetch("http://localhost:5000/api/code/execute_streaming", {
+        const redirectResponse = await fetch("http://localhost:6600/api/code/execute_streaming", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -201,6 +204,10 @@ export const useCodeStore = defineStore("code", {
                     this.addOutputLine("stderr", data.line);
                   } else if (data.type === "error") {
                     this.addOutputLine("error", data.line);
+                  } else if (data.type === "done") {
+                    // Immediate completion signal
+                    gotDone = true;
+                    return; // stop processing further
                   }
 
                   // Force immediate UI update
@@ -239,7 +246,7 @@ export const useCodeStore = defineStore("code", {
           throw error;
         }
       } finally {
-        if (completed) {
+        if (completed || gotDone) {
           this.isExecuting = false;
           this.isStreaming = false;
         } else if (hadNetworkError) {
@@ -270,7 +277,7 @@ export const useCodeStore = defineStore("code", {
         if (options.keepalive) {
           fetchOptions.keepalive = true;
         }
-        const resp = await fetch("http://localhost:5000/api/code/stop", fetchOptions);
+        const resp = await fetch("http://localhost:6600/api/code/stop", fetchOptions);
         const data = await resp.json().catch(() => ({}));
         this.isExecuting = false;
         this.isStreaming = false;

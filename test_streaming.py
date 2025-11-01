@@ -88,7 +88,7 @@ def test_backend_streaming():
     """Test Backend API streaming endpoint with redirect approach"""
     
     # First get authentication token
-    login_url = "http://localhost:5000/api/auth/login"
+    login_url = "http://localhost:6600/api/auth/login"
     login_payload = {
         "username": "testuser",
         "password": "testpass"
@@ -110,7 +110,7 @@ def test_backend_streaming():
         return
     
     # Test redirect endpoint
-    url = "http://localhost:5000/api/code/execute_streaming"
+    url = "http://localhost:6600/api/code/execute_streaming"
     
     test_code = '''
 import time

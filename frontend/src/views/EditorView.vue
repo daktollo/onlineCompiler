@@ -234,7 +234,7 @@ export default {
   position: fixed;
   inset: 0;
   z-index: 110;
-  pointer-events: none; /* allow drag via container while matrix pixels ignore pointer */
+  pointer-events: none; /* allow clicks to pass through by default */
 }
 
 /* Draggable window */

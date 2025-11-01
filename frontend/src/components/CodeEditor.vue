@@ -104,7 +104,7 @@ export default {
     onMounted(() => {
       if (editorElement.value) {
         editorView.value = new EditorView({
-          doc: '# Test streaming output\nimport time\n\nprint("Starting...")\nfor i in range(5):\n    print(f"Count: {i}")\n    time.sleep(1)\nprint("Done!")\n\n# Test infinite loop (uncomment to test)\n# while True:\n#     print("Infinite loop")\n#     time.sleep(1)',
+          doc: 'from block_library import BlockDisplay\n\n# Create a display and set (0,0) to red\ndisp = BlockDisplay()\ndisp.set_block_color(0, 0, (255, 0, 0))\ndisp.set_block_on(0, 0, True)\n\nprint("Display initialized; (0,0) set to red")',
           extensions: [
             basicSetup,
             python(),

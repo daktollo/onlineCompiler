@@ -81,6 +81,9 @@ function pixelStyle(cell) {
   background: radial-gradient(120% 100% at 50% 0%, #0b0f14 0%, #0a0e12 60%, #090c10 100%);
   border-bottom-left-radius: 10px;
   border-bottom-right-radius: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .matrix {
   display: grid;

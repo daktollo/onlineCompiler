@@ -82,6 +82,7 @@ function onPointerUp() {
   cursor: default;
   user-select: none;
   -webkit-user-drag: none;
+  pointer-events: auto; /* re-enable events even if parent layer has pointer-events: none */
 }
 </style>
 

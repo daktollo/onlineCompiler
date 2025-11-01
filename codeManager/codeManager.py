@@ -66,16 +66,8 @@ def execute_python_with_streaming(container_name, python_code, output_queue):
         env={"PYTHONUNBUFFERED": "1"}  # Force unbuffered Python
     )
     
-    # Add automatic flush after each print statement
-    enhanced_code = python_code.replace('print(', 'print(').replace('print (', 'print(')
-    # Add flush after each print statement with better regex
-    import re
-    # More robust regex that handles nested parentheses
-    enhanced_code = re.sub(r'print\s*\([^)]*\)', lambda m: m.group(0) + '; sys.stdout.flush()', enhanced_code)
-    
-    # Add sys import if not present
-    if 'import sys' not in enhanced_code:
-        enhanced_code = 'import sys\n' + enhanced_code
+    # Send code as-is; -u and PYTHONUNBUFFERED already ensure unbuffered output
+    enhanced_code = python_code
     
     # Send enhanced code to stdin
     process.stdin.write(enhanced_code)

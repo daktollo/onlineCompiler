@@ -5,12 +5,9 @@ services:
     container_name: backend
     ports:
       - "5000:5000"
-    #volumes:
-      #- /home/daktollo/SEP/KG/onlineCompiler/backend:/app
     depends_on:
       - manager
       - mongodb
-      - ollama
     networks:
       - batman
 
@@ -19,8 +16,6 @@ services:
     container_name: frontend
     ports:
       - "3000:3000"
-    #volumes:
-      #- /home/daktollo/SEP/KG/onlineCompiler/frontend:/app
     depends_on:
       - backend
     networks:
@@ -33,10 +28,8 @@ services:
       - "5001:5001"
     depends_on:
       - mongodb
-      - ollama
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      #- /home/daktollo/SEP/KG/onlineCompiler/codeManager:/app
     networks:
       - batman
 
@@ -47,32 +40,12 @@ services:
       MONGO_INITDB_ROOT_USERNAME: admin
       MONGO_INITDB_ROOT_PASSWORD: password
     volumes:
-      - /home/daktollo/SEP/KG/onlineCompiler/mongodb/data:/data/db
+      - mongodb_data:/data/db
     ports:
       - "27018:27017"
     networks:
       - batman
 
-  ollama:
-    image: ollama/ollama:latest
-    container_name: ollama
-    ports:
-      - "11433:11433"
-    volumes:
-      - /home/daktollo/SEP/KG/onlineCompiler/ollama/data:/root/.ollama
-    networks:
-      - batman
-    depends_on:
-      - mongodb
-    environment:
-      - OLLAMA_HOST=0.0.0.0:11433
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
 
 networks:
   batman:
@@ -80,4 +53,5 @@ networks:
     name: batman
 
 volumes:
-  ollama_storage:
+  mongodb_data:
+    driver: local

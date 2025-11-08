@@ -73,27 +73,31 @@ def execute_python_with_streaming(container_name, python_code, output_queue):
     process.stdin.write(enhanced_code)
     process.stdin.close()
     
-    def read_output():
-        """Read stdout in a separate thread"""
+    def read_stdout():
+        """Read stdout line-by-line"""
         try:
-            while True:
-                line = process.stdout.readline()
-                if line:
-                    output_queue.put(('stdout', line.rstrip()))
-                else:
+            for line in iter(process.stdout.readline, ''):
+                if not line:
                     break
-            
-            # Read any remaining stderr
-            error_line = process.stderr.readline()
-            if error_line:
-                output_queue.put(('stderr', error_line.rstrip()))
+                output_queue.put(('stdout', line.rstrip()))
         except Exception as e:
-            output_queue.put(('error', f"Error reading output: {str(e)}"))
+            output_queue.put(('error', f"Error reading stdout: {str(e)}"))
+
+    def read_stderr():
+        """Read stderr line-by-line (tracebacks, errors)"""
+        try:
+            for line in iter(process.stderr.readline, ''):
+                if not line:
+                    break
+                output_queue.put(('stderr', line.rstrip()))
+        except Exception as e:
+            output_queue.put(('error', f"Error reading stderr: {str(e)}"))
     
-    # Start reading output in a separate thread
-    thread = threading.Thread(target=read_output)
-    thread.daemon = True
-    thread.start()
+    # Start reading output in separate threads
+    t_out = threading.Thread(target=read_stdout, daemon=True)
+    t_err = threading.Thread(target=read_stderr, daemon=True)
+    t_out.start()
+    t_err.start()
     
     return process
 

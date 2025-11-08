@@ -191,7 +191,7 @@ def execute_code_streaming(current_user):
 
     # Return redirect information to client
     redirect_info = {
-        'redirect_url': 'http://localhost:5001/run_code_streaming',
+        'redirect_url': '/run_code_streaming',
         'method': 'POST',
         'headers': {
             'Content-Type': 'application/json'

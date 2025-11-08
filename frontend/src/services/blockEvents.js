@@ -12,7 +12,7 @@ export function startBlockEvents(userId) {
   stopBlockEvents();
 
   currentUserId = userId;
-  const url = `http://localhost:5001/events?user_id=${encodeURIComponent(userId)}`;
+  const url = `/events?user_id=${encodeURIComponent(userId)}`;
   const store = useBlockDisplaysStore();
 
   const connect = () => {

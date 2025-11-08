@@ -16,7 +16,7 @@ export const useAuthStore = defineStore("auth", {
   actions: {
     async login(username, password) {
       try {
-        const response = await axios.post("http://localhost:6600/api/auth/login", {
+        const response = await axios.post("/api/auth/login", {
           username,
           password,
         });
@@ -41,7 +41,7 @@ export const useAuthStore = defineStore("auth", {
 
     async register(username, password) {
       try {
-        const response = await axios.post("http://localhost:6600/api/auth/register", {
+        const response = await axios.post("/api/auth/register", {
           username,
           password,
         });
@@ -68,7 +68,7 @@ export const useAuthStore = defineStore("auth", {
       if (!this.token) return false;
 
       try {
-        const response = await axios.get("http://localhost:6600/api/auth/verify", {
+        const response = await axios.get("/api/auth/verify", {
           headers: {
             Authorization: `Bearer ${this.token}`,
           },

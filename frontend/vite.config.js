@@ -15,5 +15,20 @@ export default defineConfig({
   server: {
     host: "0.0.0.0",
     port: 6610,
+    proxy: {
+      "/api": {
+        target: "http://backend:6600",
+        changeOrigin: true,
+        ws: true,
+      },
+      "/events": {
+        target: "http://code_manager:5001",
+        changeOrigin: true,
+      },
+      "/run_code_streaming": {
+        target: "http://code_manager:5001",
+        changeOrigin: true,
+      },
+    },
   },
 });

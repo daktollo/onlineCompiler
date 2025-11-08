@@ -27,7 +27,7 @@ export const useCodeStore = defineStore("code", {
 
       try {
         const response = await axios.post(
-          "http://localhost:6600/api/code/execute",
+          "/api/code/execute",
           {
             code,
           },
@@ -68,7 +68,7 @@ export const useCodeStore = defineStore("code", {
       }
 
       try {
-        const response = await fetch("http://localhost:6600/api/ai/error-handler", {
+        const response = await fetch("/api/ai/error-handler", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export const useCodeStore = defineStore("code", {
       try {
         // Step 1: Get redirect information from backend
         console.log("🔄 Getting redirect information from backend...");
-        const redirectResponse = await fetch("http://localhost:6600/api/code/execute_streaming", {
+        const redirectResponse = await fetch("/api/code/execute_streaming", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -277,7 +277,7 @@ export const useCodeStore = defineStore("code", {
         if (options.keepalive) {
           fetchOptions.keepalive = true;
         }
-        const resp = await fetch("http://localhost:6600/api/code/stop", fetchOptions);
+        const resp = await fetch("/api/code/stop", fetchOptions);
         const data = await resp.json().catch(() => ({}));
         this.isExecuting = false;
         this.isStreaming = false;

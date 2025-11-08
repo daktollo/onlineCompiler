@@ -6,6 +6,7 @@ import json
 import logging
 from flask import Flask, request, jsonify, Response, stream_with_context
 from flask_cors import CORS
+import requests
 
 app = Flask(__name__)
 CORS(app, 
@@ -252,10 +253,26 @@ def stop_container():
 
 @app.route('/events', methods=['GET'])
 def sse_events():
-    """SSE stream per user_id. Client connects with /events?user_id=..."""
-    user_id = request.args.get('user_id')
-    if not user_id:
-        return jsonify({"error": "user_id gereklidir."}), 400
+    """SSE stream per authenticated user. Client connects with /events?token=..."""
+    token = request.args.get('token')
+    if not token:
+        return jsonify({"error": "token gereklidir."}), 400
+    # Verify token with backend and resolve user_id
+    try:
+        vr = requests.get(
+            'http://backend:6600/api/auth/verify',
+            headers={'Authorization': f'Bearer {token}'},
+            timeout=5
+        )
+        if vr.status_code != 200:
+            return jsonify({"error": "token doğrulanamadı"}), 401
+        data = vr.json() or {}
+        user_info = data.get('user') or {}
+        user_id = user_info.get('user_id')
+        if not user_id:
+            return jsonify({"error": "user_id bulunamadı"}), 401
+    except Exception as e:
+        return jsonify({"error": f"verify hatası: {str(e)}"}), 500
 
     client_queue = queue.Queue(maxsize=100)
 

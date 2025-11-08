@@ -5,14 +5,14 @@ let currentUserId = null;
 let reconnectTimer = null;
 let retryDelayMs = 1000;
 
-export function startBlockEvents(userId) {
-  if (!userId) return;
+export function startBlockEvents(userId, token) {
+  if (!userId || !token) return;
   if (currentUserId === userId && eventSource) return;
 
   stopBlockEvents();
 
   currentUserId = userId;
-  const url = `/events?user_id=${encodeURIComponent(userId)}`;
+  const url = `/events?token=${encodeURIComponent(token)}`;
   const store = useBlockDisplaysStore();
 
   const connect = () => {

@@ -28,7 +28,7 @@ export const useAuthStore = defineStore("auth", {
         localStorage.setItem("token", this.token);
 
         // Start SSE stream once authenticated
-        startBlockEvents(this.user?.id || this.user?._id || this.user?.user_id || this.user);
+        startBlockEvents(this.user?.user_id || this.user?.id || this.user?._id, this.token);
 
         return { success: true, data: response.data };
       } catch (error) {
@@ -53,7 +53,7 @@ export const useAuthStore = defineStore("auth", {
         localStorage.setItem("token", this.token);
 
         // Start SSE after register
-        startBlockEvents(this.user?.id || this.user?._id || this.user?.user_id || this.user);
+        startBlockEvents(this.user?.user_id || this.user?.id || this.user?._id, this.token);
 
         return { success: true, data: response.data };
       } catch (error) {
@@ -78,7 +78,7 @@ export const useAuthStore = defineStore("auth", {
         this.isAuthenticated = true;
 
         // Ensure SSE is started after token verification as well
-        startBlockEvents(this.user?.id || this.user?._id || this.user?.user_id || this.user);
+        startBlockEvents(this.user?.user_id || this.user?.id || this.user?._id, this.token);
 
         return true;
       } catch (error) {

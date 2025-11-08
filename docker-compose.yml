@@ -82,3 +82,5 @@ networks:
 volumes:
   ollama_storage:
   mongo_data:
+
+# to build: /usr/bin/bash -lc 'sudo docker build -t code_manager:runner -f codeManager/Dockerfile codeManager && docker build -t block-runner:latest -f codeManager/codeRunner/Dockerfile codeManager/codeRunner && docker compose build && docker compose up -d --force-recreate manager frontend backend && RUNNERS=$(docker ps -q -f name=code_runner_) && if [ -n "$RUNNERS" ]; then docker rm -f $RUNNERS; else echo "No existing code_runner containers"; fi'
